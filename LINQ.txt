@@ -1,0 +1,254 @@
+1.webform1
+==>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace demo_9_9
+{
+    public partial class WebForm1 : System.Web.UI.Page
+    {
+        [Serializable]
+
+        public class student
+        {
+            public String name { get; set; }
+
+            public int age { get; set; }
+        }
+
+        private List<student> stud_list1
+        {
+            get
+            {
+                if (ViewState["stud_list1"]==null)
+                {
+                    ViewState["stud_list1"]=new List<student>();
+                    
+                }
+
+                return (List<student>)ViewState["stud_list1"];
+
+
+            }
+        }
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+      
+
+        protected void btnAdd_Click(object sender, EventArgs e)
+        {
+            String name=TextBox1.Text;
+            int age = int.Parse(TextBox2.Text);
+
+            stud_list1.Add(new student { name = name, age = age });
+            lblAdd.Text = "Student Added Successfully!";
+            TextBox1.Text = "";
+            TextBox2.Text = "";
+
+        }
+
+        protected void btnDisplay_Click(object sender, EventArgs e)
+        {
+            lblAdd.Text = "Student Details <br>";
+
+            foreach(var s in stud_list1)
+            {
+                lblAdd.Text += "<br>Name:"+s.name+"Age :"+s.age.ToString();
+            }
+        }
+
+        protected void btnFirst_Click(object sender, EventArgs e)
+        {
+            var firstStudent = stud_list1.First().name;
+
+            lblFirst.Text="First Student :"+firstStudent.ToString();
+        }
+
+        protected void btnLast_Click(object sender, EventArgs e)
+        {
+            var lastStudent = stud_list1.Last().name;
+
+            lblLast.Text = "Last Student :" + lastStudent.ToString();
+
+        }
+
+        protected void btnDefault_Click(object sender, EventArgs e)
+        {
+            var data = stud_list1.Where(s=>s.age>19).Select(s=>s.age);
+            foreach(var item in data)
+            {
+                lblDefault.Text += item.ToString()+",";
+            }
+
+            var result = stud_list1.FirstOrDefault(s=>s.age>19);
+            if(result != null)
+            {
+                lblDefault.Text += "<br> First Student From Condition"+result.age.ToString();
+            }
+        }
+
+        protected void btnLastDefault_Click(object sender, EventArgs e)
+        {
+
+            var data = stud_list1.Where(s => s.age > 19).Select(s => s.age);
+            foreach (var item in data)
+            {
+                lblLastDefault.Text += item.ToString() + ",";
+            }
+
+
+            var result = stud_list1.LastOrDefault(s => s.age > 19);
+            if (result != null)
+            {
+                lblLastDefault.Text += "<br> Last Student From Condition" + result.age.ToString();
+            }
+
+        }
+
+        protected void btnSingle_Click(object sender, EventArgs e)
+        {
+            if(stud_list1.Count==1)
+            {
+                lblSingle.Text=stud_list1.Single().name;
+            }
+            else
+            {
+                lblSingle.Text = "Student Count More than 1";
+            }
+        }
+
+        protected void btnSingleDefault_Click(object sender, EventArgs e)
+        {
+            var result = stud_list1.SingleOrDefault(s => s.age == 19);
+            if (result != null)
+            {
+                lblSingleDefault.Text = result.name.ToString();
+            }
+            else
+            {
+                lblSingleDefault.Text = "No Student Matches The Criteria";
+            }
+
+        }
+
+        protected void btnSerch_Click(object sender, EventArgs e)
+        {
+            var nameWiths = stud_list1
+                .Where(s => s.name.StartsWith("s"))
+                .Select(s => s.name);
+            lblSearch.Text = "student(starting s):" + string.Join(", ", nameWiths);
+        }
+
+        protected void btnOrderBy_Click(object sender, EventArgs e)
+        {
+            var n1=stud_list1.OrderBy(s=>s.name)
+                .Select(s => s.name);
+            lblOrder.Text = "student name in ascending:" + string.Join(",", n1);
+        }
+
+        protected void btnAggregate_Click(object sender, EventArgs e)
+        {
+            double avgAge=stud_list1.Average(s => s.age);
+            int count=stud_list1 .Count();
+            int sum =stud_list1.Sum(s=>s.age);
+            int min = stud_list1.Min(s => s.age);
+            int max= stud_list1.Max(s => s.age);
+
+            lblAggregate.Text = "AvgAge:" + string.Join(",", avgAge);
+            lblAggregate.Text="Count:"+string.Join(",", count);
+            lblAggregate.Text = "Sum:" + string.Join(",", sum);
+            lblAggregate.Text = "Min:" + string.Join(",", min);
+            lblAggregate.Text = "Max:" + string.Join(",", max);
+        }
+    }
+}
+
+------------------------------------------
+*********tuple**************
+----------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace tuple_demo_30_8
+{
+    public partial class WebForm2 : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private List<Tuple<string, string, string,string>> people
+        {
+            get
+            {
+                if (ViewState["people"] == null)
+                    ViewState["people"] = new List<Tuple<string, string, string,string>>();
+                return (List<Tuple<string, string, string,string>>)ViewState["people"];
+            }
+
+
+        }
+
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+            String name = TextBox1.Text;
+            String email = TextBox2.Text;
+
+            String gender;
+
+            if(RadioButton1.Checked)
+            {
+                gender = RadioButton1.Text;
+            }
+            else
+            {
+                gender = RadioButton2.Text;
+            }
+
+            String course,result1;
+
+            int i;
+            for(i=0;i<ListBox1.SelectedIndex.ToString().Length;i++)
+            {
+                result1=ListBox1.Items[i].ToString();
+            }
+
+            course =result1;
+
+            var person = Tuple.Create(name, email,gender,course);
+            people.Add(person);
+
+            TextBox1.Text = "";
+            TextBox2.Text = "";
+            
+
+            String result = "<b> All Data :</b><br/>";
+
+            foreach (var p in people)
+            {
+                result += "</br></br>Name :" + p.Item1 + "</br> Email :" + p.Item2 + "</br> Gender :"+p.Item3+"</br> Course :"+p.Item4;
+            }
+            Label1.Text = result;
+
+
+        }
+
+      
+    }
+}
+-------------------------------------

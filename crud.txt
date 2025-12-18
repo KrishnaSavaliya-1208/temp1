@@ -1,0 +1,146 @@
+Install-Package MySql.Data
+------------------------------------------
+1.web.config
+==>
+<configuration>
+	<connectionStrings>
+		<add name="MySqlConn"
+         connectionString="server=localhost; user id=root;password=;database=krishna"
+          providerName="MySql.Data.MySqlClient"/>
+	</connectionStrings>
+	<system.web>
+		<compilation debug="true" targetFramework="4.8">
+		</compilation>
+	</system.web>
+</configuration>
+---------------------------------------------------
+2.webForm.aspx
+==>
+using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace Crud_1_db
+{
+    public partial class WebForm1 : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            //String constr = ConfigurationManager.ConnectionStrings["MySqlConn"].ConnectionString;
+
+            if (!IsPostBack)
+            {
+                LoadStudent();
+            }
+        }
+        private void LoadStudent()
+        {
+            String constr = ConfigurationManager.ConnectionStrings["MySqlConn"].ConnectionString;
+
+            using (MySqlConnection con = new MySqlConnection(constr))
+            {
+                String query = "select * from crud";
+                MySqlDataAdapter ad = new MySqlDataAdapter(query, con);
+                DataTable dt = new DataTable();
+                ad.Fill(dt);
+                GridView1.DataSource = dt;
+                GridView1.DataBind();
+            }
+        }
+
+        protected void btnInsert_Click(object sender, EventArgs e)
+        {
+            int rollno1=int.Parse(txtRoll.Text);
+            string name1 = txtName.Text;
+
+            String constr = ConfigurationManager.ConnectionStrings["MySqlConn"].ConnectionString;
+            using (MySqlConnection con = new MySqlConnection(constr))
+            {
+                string query = "Insert into crud(rollno,name) values (@rno,@name)";
+                MySqlCommand cmd = new MySqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@rno", rollno1);
+                cmd.Parameters.AddWithValue("@name", name1);
+                con.Open();
+                cmd.ExecuteNonQuery();
+                con.Close();
+
+               LoadStudent();
+                txtRoll.Text = "";
+                txtName.Text = "";
+
+            }
+
+        }
+
+        protected void btnDelete_Click(object sender, EventArgs e)
+        {
+            int rollno1 = int.Parse(txtRoll.Text);
+            String constr = ConfigurationManager.ConnectionStrings["MySqlConn"].ConnectionString;
+            using (MySqlConnection con = new MySqlConnection(constr))
+            {
+                String query = "DELETE FROM crud WHERE rollno = @rno";
+                MySqlCommand cmd = new MySqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@rno", rollno1);
+                con.Open();
+                cmd.ExecuteNonQuery();
+                int rows = cmd.ExecuteNonQuery();
+
+               
+
+                LoadStudent();
+                txtRoll.Text = "";
+
+
+            }
+        }
+
+        protected void btnUpdate_Click(object sender, EventArgs e)
+        {
+            int rollno1 = int.Parse(txtRoll.Text);
+            String name1 = txtName.Text;
+           
+            String constr = ConfigurationManager.ConnectionStrings["MySqlConn"].ConnectionString;
+            using (MySqlConnection con = new MySqlConnection(constr))
+            {
+                string query = "Update crud set name=@name where rollno=@rno";
+                MySqlCommand cmd = new MySqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@rno", rollno1);
+                cmd.Parameters.AddWithValue("@name", name1);
+                con.Open();
+                cmd.ExecuteNonQuery();
+                con.Close();
+
+                LoadStudent();
+                txtRoll.Text = "";
+                txtName.Text = "";
+
+            }
+
+        }
+
+        protected void btnSerch_Click(object sender, EventArgs e)
+        {
+            String constr = ConfigurationManager.ConnectionStrings["MySqlConn"].ConnectionString;
+            using (MySqlConnection con = new MySqlConnection(constr))
+            {
+                string query = "SELECT * FROM crud WHERE num LIKE @r";
+
+                MySqlDataAdapter adapter = new MySqlDataAdapter(query, con);
+                adapter.SelectCommand.Parameters.AddWithValue("@r", int.Parse(txtRoll.Text));
+
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+
+                GridView1.DataSource= dt;
+                GridView1.DataBind();
+            }
+            }
+    }
+}
+-------------------------------------------------------------------------------------

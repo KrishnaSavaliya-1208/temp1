@@ -1,0 +1,103 @@
+1.HomeController==>Controller
+==>
+[HttpGet]
+public ActionResult product_view()
+{
+    return View();
+}
+
+[HttpPost]
+
+public ActionResult product_view(product_class p)
+
+{     
+
+    int price = 0;
+
+    switch(p.p_name)
+    {
+        case "Laptop":
+            price = 50000;
+            break;
+
+        case "Mobile":
+            price = 20000;
+            break;
+        case "TV":
+            price = 60000;
+            break;
+        case "Fridge":
+            price = 45000;
+            break;
+
+    }
+    p.price_per_item = price;
+    p.total_price = p.qty * price;
+    return View("product_details",p);
+}
+
+public ActionResult Index()
+{
+    return View();
+}
+----------------------------------------------------------------------------------------
+2.product_class.cs==>model
+==>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace MVC_product_8_10.Models
+{
+    public class product_class
+    {
+        public String p_name { get; set; }
+
+        public int qty { get; set; }
+
+        public int price_per_item { get; set;}
+
+        public int total_price {  get; set; }
+
+    }
+}
+=======================================================
+3.views->home
+==>
+1.product_details
+--------------------------
+
+@{
+    ViewBag.Title = "product_details";
+}
+
+<h2>product_details</h2>
+
+<p><b>Product Name :</b>@Model.p_name</p>
+<p><b>Quantity :</b>@Model.qty</p>
+<p><b>Price per Quantity :</b>@Model.price_per_item</p>
+<p><b>Total Price :</b>@Model.total_price</p>
+------------------------------------------------------
+2.product_view
+==>
+------------------
+@model MVC_product_8_10.Models.product_class
+
+<h2> Enter Product details</h2>
+
+@using(Html.BeginForm())
+{
+    <p>
+        Product Name :
+        @Html.DropDownListFor(p=>p.p_name,new SelectList(new[] {"Laptop","Mobile","TV","Fridge"}))
+    </p>
+
+    <p>
+        Quantity :
+        @Html.DropDownListFor(p=>p.qty,new SelectList(Enumerable.Range(1,10)))
+    </p>
+
+    <input type="submit" value="Submit Data" />
+    
+}
